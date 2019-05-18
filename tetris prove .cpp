@@ -2,7 +2,7 @@
 
 using namespace std;
 
-  bool gamePlace[8][16];                // matriz principal, el "Tablero de juego"
+  bool gamePlace[16][8];                // matriz principal, el "Tablero de juego"
 
   class Piece {                         // clase principal para las piezas, de aqui se derivan todas las piezasutilizadas en el juego
     public:
@@ -33,8 +33,8 @@ using namespace std;
       }
       void clearPiece(){
         clearMatrix();
-        posX=0;
-        posX=0;
+        posX=3;
+        posY=0;
         relativePosition=0;
       }
       //void movePiece
@@ -209,16 +209,162 @@ using namespace std;
       }
   };
 
-int main(){
-    CyanPiece C1;
-    C1.clearPiece();
-    for(int i=0;i<4;i++){
-        C1.clearMatrix();
-        C1.generate1();
-        C1.showPiece_forC();
-        C1.turnRight();
+bool check(Piece P){
+    for(int i=0 ; i<4 ; i++){
+        for(int j=0 ; j<4 ; j++){
+            if(P.matrix[i][j]==1){
+                if(i+P.posY >= 16 || i+P.posY < 0 || j+P.posX >= 8 || j+P.posX < 0 || gamePlace[i+P.posY][j+P.posX]==1){
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+  }
+
+  bool bajar(Piece P){
+    Piece Temp=P;
+    Temp.posY+=1;
+    if(check(Temp)){
+        return true;
+    }
+    else {
+        return false;
+    }
+  }
+
+  bool mov_izq(Piece P){
+    Piece Temp=P;
+    Temp.posX-=1;
+    if(check(Temp)){
+        return true;
+    }
+    else {
+        return false;
+    }
+  }
+
+  bool mov_der(Piece P){
+    Piece Temp=P;
+    Temp.posX+=1;
+    if(check(Temp)){
+        return true;
+    }
+    else {
+        return false;
+    }
+  }
+
+
+
+
+void overlap(Piece P){
+   for(int i=0 ; i<4 ; i++){
+        for(int j=0 ; j<4 ; j++){
+            gamePlace[i+P.posY][j+P.posX]|= P.matrix[i][j];
+        }
+    }
+    return;
+}
+
+void showTime(Piece P){
+    cout << P.posY << " " << P.posX <<endl;
+    for(int i=0 ; i<16 ; i++){
+        for(int j=0 ; j<8 ; j++){
+            if(j-P.posX > 3 || j-P.posX < 0 || i-P.posY > 3 || i-P.posY < 0){
+                cout << gamePlace[i][j] << " ";
+                //cout << P.posX-j << " " << P.posY-i << " " << i << " " << j  <<"&     ";
+            }
+            else {
+                cout << bool(gamePlace[i][j] | P.matrix[i-P.posY][j-P.posX]) << " ";
+                //cout << P.posX << " " << P.posY-i << " " << i << " " << j  <<"|     ";
+            }
+        }
         cout << endl;
     }
+}
 
-//    return 0;
+
+int main(){
+    for(int i=0;i<16;i++){
+        for(int j=0;j<8;j++){
+            gamePlace[i][j]=0;
+        }
+    }
+    CyanPiece C;
+    PurplePiece Q;
+    GreenPiece G;
+    RedPiece R;
+    BluePiece B;
+    YellowPiece Y;
+    OrangePiece O;
+
+    Piece *P;
+    do{
+
+        int key = rand()%7 +1;
+        cout <<"key: "<< key << endl;
+        switch (key){
+        case 1:
+            P=&C;
+            break;
+        case 2:
+            P=&Q;
+            break;
+        case 3:
+            P=&G;
+            break;
+        case 4:
+            P=&R;
+            break;
+        case 5:
+            P=&B;
+            break;
+        case 6:
+            P=&Y;
+            break;
+        default:
+            P=&O;
+            break;
+        }
+        P->clearPiece();
+        P->generate1();
+
+        bool L=true;
+        while(L==true){
+            P->showPiece_forC();
+            cout << endl;
+            showTime(*P);
+            cout << endl;
+            int n;
+            cin >> n;
+            switch (n){
+            case 1:
+                if(bajar(*P)){
+                    P->posY++;
+                }
+                else {
+                    L=false;
+                    overlap(*P);
+                }
+                break;
+            case 2:
+                if(mov_izq(*P)){
+                    P->posX--;
+                }
+                break;
+            case 3:
+                if(mov_der(*P)){
+                    P->posX++;
+                }
+                break;
+            default:
+                P->turnRight();
+                P->clearMatrix();
+                P->generate1();
+                break;
+            }
+        }
+    }while(1);
+
 }
