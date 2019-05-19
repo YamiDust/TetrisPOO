@@ -285,6 +285,24 @@ void showTime(Piece P){
 }
 
 
+void correction(){
+    for(int i=16;i>=0;i--){
+        bool ax=true;
+        for(int j=0;j<8;j++){
+            ax &= gamePlace[i][j];
+        }
+        if(ax==true){
+            for(int k=i;k>=0;k--){
+                for(int l=0;l<8;l++){
+                    gamePlace[k][l]=gamePlace[k-1][l];
+                }
+            }
+            i++;
+        }
+    }
+}
+
+
 int main(){
     for(int i=0;i<16;i++){
         for(int j=0;j<8;j++){
@@ -346,6 +364,7 @@ int main(){
                 else {
                     L=false;
                     overlap(*P);
+                    correction();
                 }
                 break;
             case 2:
