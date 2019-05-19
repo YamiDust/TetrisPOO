@@ -18,7 +18,20 @@ using namespace std;
           for(int j=0 ; j<4 ; j++)          // son dos for anidados para recorrer la matriz de 4 x 4
             matrix[i][j] = 0;
       }
-      void turnRight(){                                 //funcion para girar la pieza
+
+
+      bool CicleCorrector(){
+        for(int i=0 ; i<4 ; i++){
+            for(int j=0 ; j<4 ; j++){
+                if(matrix[i][j]==1 && (posX+j>= 8 || posX+j < 0 || posY+i>= 16 || posY+i < 0)){
+                    return true;
+                }
+            }
+        }
+        return false;
+      }
+
+      virtual void turnRight(){                                 //funcion para girar la pieza
         relativePosition++;
         relativePosition = relativePosition % 4;        // cuando se presione el boton para girar, se ejecutara esta funcion, funiona aumentando la variable "posicion relativa"
       }
@@ -68,6 +81,16 @@ using namespace std;
           matrix[2][3]=1;
         }
       }
+
+      void turnRight(){
+        do{
+            relativePosition++;
+            relativePosition = relativePosition % 4;        // cuando se presione el boton para girar, se ejecutara esta funcion, funiona aumentando la variable "posicion relativa"
+            clearMatrix();
+            generate1();
+        }while(CicleCorrector()==true);
+
+      }
   };
 
 
@@ -99,6 +122,18 @@ using namespace std;
           matrix[0][2]=1;
         }
       }
+
+      void turnRight(){
+        do{
+            relativePosition++;
+            relativePosition = relativePosition % 4;        // cuando se presione el boton para girar, se ejecutara esta funcion, funiona aumentando la variable "posicion relativa"
+            clearMatrix();
+            generate1();
+            //showPiece_forC();
+        }while(CicleCorrector());
+
+      }
+
   };
 
   class OrangePiece : public Piece {      // la pieza de color Orange/naranja es la pieza que es una ele  "L", mas o menos así
@@ -129,6 +164,17 @@ using namespace std;
           matrix[2][0]=1;
         }
       }
+
+      void turnRight(){
+        do{
+            relativePosition++;
+            relativePosition = relativePosition % 4;        // cuando se presione el boton para girar, se ejecutara esta funcion, funiona aumentando la variable "posicion relativa"
+            clearMatrix();
+            generate1();
+            //showPiece_forC();
+        }while(CicleCorrector());
+
+      }
   };
 
   class YellowPiece : public Piece {      // la pieza de color Yellow/amarilla es la pieza que es un cuadro  "[]", mas o menos así
@@ -158,6 +204,15 @@ using namespace std;
           matrix[2][1]=1;
         }
       }
+      void turnRight(){
+        do{
+            relativePosition++;
+            relativePosition = relativePosition % 2;        // cuando se presione el boton para girar, se ejecutara esta funcion, funiona aumentando la variable "posicion relativa"
+            clearMatrix();
+            generate1();
+        }while(CicleCorrector());
+
+      }
   };
 
   class RedPiece : public Piece {      // la pieza de color Red/rojo es la pieza que es simila a una Z
@@ -175,6 +230,15 @@ using namespace std;
           matrix[1][0]=1;
           matrix[2][0]=1;
         }
+      }
+      void turnRight(){
+        do{
+            relativePosition++;
+            relativePosition = relativePosition % 2;        // cuando se presione el boton para girar, se ejecutara esta funcion, funiona aumentando la variable "posicion relativa"
+            clearMatrix();
+            generate1();
+        }while(CicleCorrector());
+
       }
   };
 
@@ -206,6 +270,15 @@ using namespace std;
           matrix[2][1]=1;
           matrix[1][0]=1;
         }
+      }
+      void turnRight(){
+        do{
+            relativePosition++;
+            relativePosition = relativePosition % 4;        // cuando se presione el boton para girar, se ejecutara esta funcion, funiona aumentando la variable "posicion relativa"
+            clearMatrix();
+            generate1();
+        }while(CicleCorrector());
+
       }
   };
 
