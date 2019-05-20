@@ -376,49 +376,53 @@ void correction(){
 
 
 int main(){
-    for(int i=0;i<16;i++){
+   for(int i=0;i<16;i++){ ///Este for inicializa el espacio de juego, y lo llena de ceros
         for(int j=0;j<8;j++){
             gamePlace[i][j]=0;
         }
     }
-    CyanPiece C;
-    PurplePiece Q;
-    GreenPiece G;
-    RedPiece R;
-    BluePiece B;
-    YellowPiece Y;
-    OrangePiece O;
+    CyanPiece C;///creamos una pieza u objeto de tip cyan
+    PurplePiece Q;///creamos una pieza u objeto de tipo purple
+    GreenPiece G;///creamos una pieza u objeto de tipo green
+    RedPiece R;///creamos una pieza u objeto de tipo red
+    BluePiece B;///creamos una pieza u objeto de tipo blue
+    YellowPiece Y;///creamos una pieza u objeto yellow
+    OrangePiece O;///creamos una pieza u objeto orange
 
-    Piece *P;
+    Piece *P; ///creamos un puntero de tipo piece que sera el unico objeto o pieza con el que trabajaremos y asignaremos para cada caso el tipo de pieza al que pertenecera
+    ///creamos un switch case para crear cada una de las piezas de forma aleatoria
     do{
 
-        int key = rand()%7 +1;
+        int key = rand()%7 +1;///key es el valor con el que asignara el tipo de pieza al puntero
         cout <<"key: "<< key << endl;
         switch (key){
         case 1:
-            P=&C;
+            P=&C;///asigna al puntero la direccion de memoria de una pieza tipo Cyan, por lo tanto el puntero o pieza se convierte a una pieza tipo cyan
             break;
         case 2:
-            P=&Q;
+            P=&Q;///asigna al puntero la direccion de memoria de una pieza tipo purple, por lo tanto el puntero o pieza se convierte a una pieza tipo purple
             break;
         case 3:
-            P=&G;
+            P=&G;///asigna al puntero la direccion de memoria de una pieza tipo green, por lo tanto el puntero o pieza se convierte a una pieza tipo green
             break;
         case 4:
-            P=&R;
+            P=&R;///asigna al puntero la direccion de memoria de una pieza tipo red, por lo tanto el puntero o pieza se convierte a una pieza tipo red
             break;
         case 5:
-            P=&B;
+            P=&B;///asigna al puntero la direccion de memoria de una pieza tipo blue, por lo tanto el puntero o pieza se convierte a una pieza tipo blue
             break;
         case 6:
-            P=&Y;
+            P=&Y;///asigna al puntero la direccion de memoria de una pieza tipo yellow, por lo tanto el puntero o pieza se convierte a una pieza tipo yellow
             break;
         default:
-            P=&O;
+            P=&O;///asigna al puntero la direccion de memoria de una pieza tipo orange, por lo tanto el puntero o pieza se convierte a una pieza tipo orange
             break;
         }
-        P->clearPiece();
-        P->generate1();
+
+
+        P->clearPiece();///como p es un puntero se utiliza el apuntador this para acceder al metodo ClearPiece que reinicia o limpia la matriz de la pieza
+        P->generate1();///Genera una nueva pieza
+
 
         bool L=true;
         while(L==true){
