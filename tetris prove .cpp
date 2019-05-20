@@ -13,12 +13,11 @@ using namespace std;
 
       virtual void generate1(){clearMatrix();};          // funcion que sirve para literalmente "dibujar" la pieza sobre la matriz secundaria
 
-      void clearMatrix(){               // funcion que limpia (incializa todo con unos) la matriz donde se guarda la pieza
+       void clearMatrix(){               // funcion que limpia (incializa todo con unos) la matriz donde se guarda la pieza
         for(int i=0 ; i<4 ; i++)
           for(int j=0 ; j<4 ; j++)          // son dos for anidados para recorrer la matriz de 4 x 4
             matrix[i][j] = 0;
       }
-
 
       bool CicleCorrector(){
         for(int i=0 ; i<4 ; i++){
