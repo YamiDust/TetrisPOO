@@ -35,14 +35,18 @@ using namespace std;
         relativePosition = relativePosition % 4;        // cuando se presione el boton para girar, se ejecutara esta funcion, funiona aumentando la variable "posicion relativa"
       }
 
+      //Funcion para ver la pieza en C
       void showPiece_forC(){
+		 //For´s para recorrer la matriz interna de la pieza
         for(int i=0 ; i<4 ; i++){
             for(int j=0 ; j<4 ; j++){
+				//Imprimir pieza
                 cout << matrix[i][j] << " ";
             }
             cout << endl;
         }
       }
+    
       void clearPiece(){
         clearMatrix();
         posX=3;
@@ -330,26 +334,34 @@ bool check(Piece P){
 
 
 
+//Funcion para fusionar las piezas que van cayendo con la matriz general
 void overlap(Piece P){
+	//For's para revisar la matriz interna del objeto P
    for(int i=0 ; i<4 ; i++){
         for(int j=0 ; j<4 ; j++){
+			//Actualiza mediante la operacion or la matriz general, ya que solo son 0's y 1's se puede usar esta operacion
             gamePlace[i+P.posY][j+P.posX]|= P.matrix[i][j];
         }
     }
     return;
 }
 
+//Funcion que imprime la condicion actual del tablero
 void showTime(Piece P){
+	//Imprime la posicion actual de la pieza
     cout << P.posY << " " << P.posX <<endl;
+	//For's que van a recorrer la matriz del tablero de 16x8
     for(int i=0 ; i<16 ; i++){
         for(int j=0 ; j<8 ; j++){
+			//revisamos si la pieza se encuentra dentro del rango en el que estamos
             if(j-P.posX > 3 || j-P.posX < 0 || i-P.posY > 3 || i-P.posY < 0){
+				//si es asi se imprime la matriz actual
                 cout << gamePlace[i][j] << " ";
-                //cout << P.posX-j << " " << P.posY-i << " " << i << " " << j  <<"&     ";
             }
             else {
+				//De lo contrario se hace la operacion or y se imprime y si un bloque del objeto se encuentra
+				//con la operacion or aparecera
                 cout << bool(gamePlace[i][j] | P.matrix[i-P.posY][j-P.posX]) << " ";
-                //cout << P.posX << " " << P.posY-i << " " << i << " " << j  <<"|     ";
             }
         }
         cout << endl;
