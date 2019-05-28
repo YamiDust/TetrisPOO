@@ -1,4 +1,3 @@
-
 #include <Sprite.h>
 #include <Matrix.h>
 #include <LiquidCrystal.h>
@@ -12,7 +11,7 @@
 
 
 //puntaje
-int puntaje=0;
+int puntaje=0,q=0;
 String texto_fila = "0";
   
 // Definimos los pines del arduino
@@ -21,9 +20,9 @@ int load = 10;    // Pin CS del módulo MAX7219
 int clock = 13;  // Pin CLK del módulo MAX7219
 
 long bdelay = 0;
-short buttondelay = 150;
-short btdowndelay = 30;
-short btsidedelay = 80;
+short buttondelay = 300;
+short btdowndelay = 250;
+short btsidedelay = 250;
 bool amaterasu=false;
 
 
@@ -31,7 +30,7 @@ bool amaterasu=false;
 
 
 int maxuse = 2; //Definimos cuantas matrices usaremos. En este caso solo se usarán 2
-Matrix myLeds = Matrix(data, load, clock, maxuse);
+Matrix myLeds = Matrix(data, clock, load, maxuse);
 
 
 
@@ -408,30 +407,52 @@ void showTime(Piece P) {
   //Imprime la posicion actual de la pieza
   //cout << P.posY << " " << P.posX <<endl;
   //For's que van a recorrer la matriz del tablero de 16x8
-  for (byte i = 0 ; i < 16 ; i++) {
-    for (byte j = 0 ; j < 8 ; j++) {
+  for (int i = 0 ; i < 16 ; i++) {
+    for (int j = 0 ; j < 8 ; j++) {
       //revisamos si la pieza se encuentra dentro del rango en el que estamos
       if (j - P.posX > 3 || j - P.posX < 0 || i - P.posY > 3 || i - P.posY < 0) {
         //si es asi se imprime la matriz actual
-          if(gamePlace[i][j]==true){
-              myLeds.write(i, j, HIGH);
+          if(i<8){
+            if(gamePlace[i][j]==true){
+                myLeds.write((j+1)%8,i, HIGH);
+            }
+            else {
+                myLeds.write((j+1)%8,i, LOW);
+            }
           }
-          else {
-              myLeds.write(i, j, LOW);
+          else{
+            if(gamePlace[i][j]==true){
+                myLeds.write((j+1)%8+8,i%8, HIGH);
+            }
+            else {
+                myLeds.write((j+1)%8+8,i%8, LOW);
+            }
           }
-        //           cout << gamePlace[i][j] << " ";
+                   //cout << gamePlace[i][j] << " ";
       }
       else {
         //De lo contrario se hace la operacion or y se imprime y si un bloque del objeto se encuentra
         //con la operacion or aparecera
         //           cout << bool(gamePlace[i][j] | P.matrix[i-P.posY][j-P.posX]) << " ";
 
-          if(bool(gamePlace[i][j] | P.matrix[i-P.posY][j-P.posX])==true){
-              myLeds.write(i, j, HIGH);
+          
+          if(i<8){
+            if(bool(gamePlace[i][j] | P.matrix[i-P.posY][j-P.posX])==true){
+              myLeds.write((j+1)%8, i, HIGH);
+             }
+             else {
+              myLeds.write((j+1)%8, i, LOW);
+            }
           }
           else {
-              myLeds.write(i, j, LOW);
+            if(bool(gamePlace[i][j] | P.matrix[i-P.posY][j-P.posX])==true){
+              myLeds.write((j+1)%8+8, i%8, HIGH);
+             }
+             else {
+              myLeds.write((j+1)%8+8, i%8, LOW);
+            }
           }
+          
       }
     }
     //   cout << endl;
@@ -440,14 +461,16 @@ void showTime(Piece P) {
 
 
 void correction() {
-  for (int i = 16; i >= 0; i--) {
+  bool xrl8=false;
+  for (int i = 15; i > 0; i--) {
     bool ax = true;
     for (int j = 0; j < 8; j++) {
       ax &= gamePlace[i][j];
     }
     if (ax == true){ 
+    xrl8=true;
     puntaje+=8;
-      for (int k = i; k >= 0; k--) {
+      for (int k = i; k > 0; k--) {
         for (int l = 0; l < 8; l++) {
           gamePlace[k][l] = gamePlace[k - 1][l];
         }
@@ -455,6 +478,10 @@ void correction() {
       i++;
     }
   
+  }
+  if(xrl8==false){
+     inicialice();
+     delay(20);
   }
 }
 
@@ -524,15 +551,16 @@ Piece* playing_Piece(Piece *P, int key) {
 
 void setup() {
   // put your setup code here, to run once:
-  pinMode(A7, INPUT); //up
-  pinMode(A6, INPUT); //right
-  pinMode(A5, INPUT); //left
-pinMode(A4, INPUT); //down 
+  pinMode(A0, INPUT); //up
+  pinMode(A1, INPUT); //right
+  pinMode(A2, INPUT); //left
+  pinMode(A3, INPUT); //down 
+  pinMode(A4, INPUT); //reset 
 // Configuramos las filas y las columnas del LCD en este caso 16 columnas y 2 filas
 lcd.begin(COLS, ROWS);
-
+  Serial.begin(9600);
+  randomSeed(9600);
 }
-
 
 int readBut()
 {
@@ -540,132 +568,131 @@ int readBut()
   {
     return 0;
   }
-  if (analogRead(A4) > 500)
+  if (analogRead(A0) > 150)
   {
     //left
-    bdelay = millis() + btsidedelay;    
-    return 3;
+    bdelay = millis() + 50;
+    delay(50);
+    if (analogRead(A0) > 150){
+      bdelay = millis() + 100;
+      delay(100);
+      return 3;
+    }
   }
   
-  if (analogRead(A5) > 500)
+  if (analogRead(A1) > 150)
   {
     //down
-    bdelay = millis() + btdowndelay;    
-    return 4;
+    bdelay = millis() + 50;
+    delay(50);
+    if (analogRead(A1) > 150){
+      bdelay = millis() + 100;
+      delay(100);
+      return 4;
+    }
   }    
-  if (analogRead(A6) > 500)
+  if (analogRead(A2) > 150)
   {
     //right
-     bdelay = millis() + btsidedelay;
-    return 2;
+    bdelay = millis() + 50;
+    delay(50);
+    if (analogRead(A2) > 150){
+      bdelay = millis() + 100;
+      delay(100);
+      return 2;  
+    }
   }  
-  if (analogRead(A7) > 500)
+  if (analogRead(A3) > 150)
   {
     //up
-    bdelay = millis() + buttondelay;
-    return 1;
+    bdelay = millis() + 50;
+    delay(50);
+    if (analogRead(A3) > 150){
+      bdelay = millis() + 100;
+      delay(100);
+      return 1;
+    }
   }  
+
+  if (analogRead(A4) > 150)
+  {
+    //up
+    bdelay = millis() + 50;
+    delay(50);
+    if (analogRead(A4) > 150){
+      bdelay = millis() + 100;
+      delay(100);
+      return 5;
+    }
+  }
   
   return 0;
 }
 
 
-void loop() {
-  if(amaterasu==false){
 
-  if (delays < millis())
-  {
-    delays = millis() + delay_;
-    if (bajar(*P)) {
+
+void loop() {
+  
+  //buttun actions
+  int button = readBut();
+  
+  if (button == 1) //up=rotate
+    P->turnRight();
+  if (button == 2) //right=moveright
+    if(mov_der(*P)){
+      P->posX++;
+    }
+  if (button == 3) //left=moveleft
+    if(mov_izq(*P)){
+      P->posX--;
+    }
+  if (button == 4) //down=movedown
+    if(bajar(*P)){
       P->posY++;
     }
-    else {
-      overlap(*P);
-      correction();
-      int amr=rand()%7+1;
-      P=interacction(amr);
-      P->clearPiece();
-      P->generate1();
-      if(check(*P)){
-        amaterasu=true;
+  
+  
+  if(q==0){
+    int y=rand()%7+1;
+    P=interacction(y);
+    P->clearPiece();
+    P->generate1();
+    q++;
+  }
+  
+  if(amaterasu==false){
+  showTime(*P);
+  if (delays < millis())
+  {
+      delays = millis()+delay_;
+      if(bajar(*P)){
+        P->posY++;
       }
-    }
+      else {
+         int z=rand()%7+1;
+         overlap(*P);
+         correction();
+         showTime(*P);
+         P=interacction(z);
+         P->clearPiece();
+         P->generate1();
+         
+         if(!bajar(*P)){
+          inicialice(); //reto tokio
+          delay(1000);
+          amaterasu = false;
+         }
+      }
+    //if(delays==0){
+      
+    
   }
+  }
+  else{
+    amaterasu = true;
+    inicialice();
+  }
+  
 
-  int button = readBut();
-  //if(button > 1 && button<4)
-  P = playing_Piece(P , button);
-  // put your main code here, to run repeatedly:
-  }
-  texto_fila=(String)puntaje;
-  // Obtenemos el tamaño del texto
-  int tam_texto=texto_fila.length();
- 
-  // Mostramos entrada texto por la izquierda
-  for(int i=tam_texto; i>0 ; i--)
-  {
-    String texto = texto_fila.substring(i-1);
- 
-    // Limpiamos pantalla
-    lcd.clear();
- 
-    //Situamos el cursor
-    lcd.setCursor(0, 0);
- 
-    // Escribimos el texto
-    lcd.print(texto);
- 
-    // Esperamos
-    delay(VELOCIDAD);
-  }
- 
-  // Desplazamos el texto hacia la derecha
-  for(int i=1; i<=16;i++)
-  {
-    // Limpiamos pantalla
-    lcd.clear();
- 
-    //Situamos el cursor
-    lcd.setCursor(i, 0);
- 
-    // Escribimos el texto
-    lcd.print(texto_fila);
- 
-    // Esperamos
-    delay(VELOCIDAD);
-  }
- 
-  // Desplazamos el texto hacia la izquierda en la segunda fila
-  for(int i=16;i>=1;i--)
-  {
-    // Limpiamos pantalla
-    lcd.clear();
- 
-    //Situamos el cursor
-    lcd.setCursor(i, 1);
- 
-    // Escribimos el texto
-    lcd.print(texto_fila);
- 
-    // Esperamos
-    delay(VELOCIDAD);
-  }
- 
-  // Mostramos salida del texto por la izquierda
-  for(int i=1; i<=tam_texto ; i++)
-  {
-    String texto = texto_fila.substring(i-1);
- 
-    // Limpiamos pantalla
-    lcd.clear();
- 
-    //Situamos el cursor
-    lcd.setCursor(0, 1);
- 
-    // Escribimos el texto
-    lcd.print(texto);
- 
-    // Esperamos
-    delay(VELOCIDAD);
-  }
 }
